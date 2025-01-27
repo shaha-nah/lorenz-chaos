@@ -20,6 +20,9 @@ x, y, z = 1.0, 1.0, 1.0
 dt = 0.01
 steps = 10000
 
+# Store trajectory as list
+trajectory = [[x, y, z]]
+
 # RK4 Implementation
 trajectory = []
 for _ in range(steps):
@@ -39,10 +42,15 @@ for _ in range(steps):
     y += (ky1 + 2 * ky2 + 2 * ky3 + ky4) / 6
     z += (kz1 + 2 * kz2 + 2 * kz3 + kz4) / 6
 
-    trajectory.append((x, y, z))
+    trajectory.append([x, y, z])
+
+trajectory = np.array(trajectory)
+
+# Downsample trajectory for faster plotting
+downsample_factor = 10
+trajectory = trajectory[::downsample_factor]
 
 # Convert trajectory to arrays
-trajectory = np.array(trajectory)
 xs, ys, zs = trajectory[:, 0], trajectory[:, 1], trajectory[:, 2]
 
 # Create segments for Line3DCollection
@@ -52,13 +60,14 @@ segments = np.concatenate([points[:-1], points[1:]], axis=1)
 colors = plt.cm.cool(np.linspace(0, 1, len(segments)))
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+
 lc = Line3DCollection(segments, colors=colors, linewidth=0.5)
 ax.add_collection(lc)
 
 ax.set_xlim(xs.min(), xs.max())
 ax.set_ylim(ys.min(), ys.max())
 ax.set_zlim(zs.min(), zs.max())
-ax.set_title("Lorenz Attractor with Gradient Colors")
+ax.set_title("Lorenz Attractor")
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
